@@ -58,7 +58,13 @@ class Snake:
         self.y_direction = y
 
     def death(self):
-        pass
+        head = self.segments[len(self.segments)-1]
+        for i in range(len(self.segments)-2):
+            if head.x == self.segments[i].x and head.y == self.segments[i].y:
+                global score
+                score = 0
+                return True
+        return False
 
     def eats(self, apple):
         snakeHead = self.segments[len(self.segments)-1]
@@ -111,7 +117,8 @@ def main():
     snake = Snake()
     apples = [Apple()]
     font = pygame.font.Font(pygame.font.match_font('consolas'), 24)
-    while 1:
+    running = True
+    while running:
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -133,6 +140,10 @@ def main():
                 if pygame.key.get_pressed()[pygame.K_SPACE]:
                     snake.add_segment()
                     break
+                if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                    running = False
+                    pygame.quit()
+                    exit()
 
         if random.randint(0, 100) == 1:
             apples.append(Apple())
@@ -142,6 +153,8 @@ def main():
             if snake.eats(apple) or apple.decayed == True:
                 apples.remove(apple)
 
+        if snake.death():
+            snake = Snake()
         screen.blit(font.render(
             f"Score: {score}", True, (255, 255, 255)), (16, height-32))
         snake.draw()
